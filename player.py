@@ -4,7 +4,7 @@ from typing import Tuple, Dict, List, Optional
 import pygame
 from pygame import Rect
 from pygame.sprite import Sprite, Group
-from constant import PATH_ASSETS_DIR
+from constant import PATH_ASSETS_DIR, PATH_SOUND_DIR
 from grenade import Grenade
 from meteorite import Meteorite
 
@@ -20,6 +20,8 @@ class Player(Sprite):
 		self.damage_meteorite = 20
 		self.score: int = 0                                                                      
 
+		self.sound_attack = pygame.mixer.Sound(PATH_SOUND_DIR / "tir.ogg")
+		self.sound_game_over = pygame.mixer.Sound(PATH_SOUND_DIR / "game_over.ogg")
 		self.image = pygame.image.load(PATH_ASSESTS_PLAYER / "player1.png")
 		self.image.set_alpha(self.opacity)
 
@@ -42,6 +44,8 @@ class Player(Sprite):
 
 	@property
 	def is_collidered_with_momi(self):
+		if self.life <= 0:
+			self.sound_game_over.play()
 		return self.game.check_collision(self, self.game.momi_group)
 
 	@property
@@ -91,7 +95,8 @@ class Player(Sprite):
 			self.rect.x -= self.speed
 
 	def attack(self):
-		self.grenade =Grenade(self)
+		self.grenade = Grenade(self)
 		self.all_grenade.add(self.grenade)
+		self.sound_attack.play()
 
 
